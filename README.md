@@ -11,13 +11,13 @@ PortZap is a command-line utility written in Dart that helps you manage and term
 ## Installation
 
 1. Ensure you have Dart SDK installed on your system.
-2. Clone this repository or download the `port_killer.dart` file.
+2. Clone this repository or download the `portzap.dart` file.
 3. Run `dart pub get` to install dependencies.
 
 ## Usage
 
 ```
-dart port_killer.dart [-p <port_number> | -l] [-h]
+dart portzap.dart [-p <port_number> | -l] [-h]
 ```
 
 ### Options:
@@ -30,17 +30,17 @@ dart port_killer.dart [-p <port_number> | -l] [-h]
 
 1. List all running ports:
    ```
-   dart port_killer.dart -l
+   dart portzap.dart -l
    ```
 
 2. Kill a process running on port 8080:
    ```
-   dart port_killer.dart -p 8080
+   dart portzap.dart -p 8080
    ```
 
 3. Show help information:
    ```
-   dart port_killer.dart -h
+   dart portzap.dart -h
    ```
 
 ## How it works
