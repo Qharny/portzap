@@ -17,7 +17,7 @@ PortZap is a command-line utility written in Dart that helps you manage and term
 ## Usage
 
 ```
-dart portzap.dart [-p <port_number> | -l] [-h]
+dart run bin/portzap.dart [-p <port_number> | -l] [-h]
 ```
 
 ### Options:
@@ -30,17 +30,17 @@ dart portzap.dart [-p <port_number> | -l] [-h]
 
 1. List all running ports:
    ```
-   dart portzap.dart -l
+   dart run bin/portzap.dart -l
    ```
 
 2. Kill a process running on port 8080:
    ```
-   dart portzap.dart -p 8080
+   dart run bin/portzap.dart -p 8080
    ```
 
 3. Show help information:
    ```
-   dart portzap.dart -h
+   dart run bin/portzap.dart -h
    ```
 
 ## How it works
