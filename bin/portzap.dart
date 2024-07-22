@@ -42,7 +42,7 @@ void main(List<String> arguments) async {
 }
 
 void printUsage(ArgParser parser) {
-  print('Usage: dart port_killer.dart [-p <port_number> | -l]');
+  print('Usage: dart run bin/portzap.dart [-p <port_number> | -l]');
   print(parser.usage);
 }
 
