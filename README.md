@@ -1,97 +1,78 @@
-# PortZap
+# PortZap 🚀⚡
 
-PortZap is a cross-platform Dart CLI tool designed to kill processes running on specified ports. It works on Windows, macOS, and Linux, making it a versatile utility for developers who need to free up ports during development.
+PortZap is a command-line utility written in Dart that helps you manage and terminate processes running on specific ports. It's cross-platform, supporting Windows, macOS, and Linux.
 
 ## Features
 
-- Kill processes on specified ports
+- List all running ports and their associated process IDs
+- Kill a process running on a specific port
 - Cross-platform support (Windows, macOS, Linux)
-- Simple command-line interface
-- Informative error messages
-
-## Prerequisites
-
-To use PortZap, you need to have Dart SDK installed on your system. If you haven't installed Dart yet, follow the official [Dart SDK installation guide](https://dart.dev/get-dart).
 
 ## Installation
 
-1. Clone this repository or download the source code:
-
-   ```
-   git clone https://github.com/yourusername/PortZap.git
-   cd PortZap
-   ```
-
-2. Install dependencies:
-
-   ```
-   dart pub get
-   ```
+1. Ensure you have Dart SDK installed on your system.
+2. Clone this repository or download the `port_killer.dart` file.
+3. Run `dart pub get` to install dependencies.
 
 ## Usage
 
-Run the script using the Dart CLI:
-
 ```
-dart run bin/PortZap.dart -p <port_number>
+dart port_killer.dart [-p <port_number> | -l] [-h]
 ```
 
-Replace `<port_number>` with the port number you want to free up.
+### Options:
 
-### Options
-
-- `-p, --port`: Specify the port number to kill (required)
+- `-p, --port`: Specify the port number to kill the process on
+- `-l, --list`: List all running ports and their associated PIDs
 - `-h, --help`: Show usage information
 
-### Examples
+### Examples:
 
-Kill process on port 8080:
-
-```
-dart run bin/PortZap.dart -p 8080
-```
-
-Show help information:
-
-```
-dart run bin/PortZap.dart -h
-```
-
-## Building an Executable
-
-To create a standalone executable that can be run without the Dart VM:
-
-1. Ensure you have the Dart SDK installed and `dart` is in your PATH.
-
-2. Run the following command in the project directory:
-
+1. List all running ports:
    ```
-   dart compile exe bin/PortZap.dart -o PortZap
+   dart port_killer.dart -l
    ```
 
-3. This will create an executable named `PortZap` (or `PortZap.exe` on Windows) in your current directory.
-
-4. You can now run the executable directly:
-
+2. Kill a process running on port 8080:
    ```
-   ./PortZap -p 8080
+   dart port_killer.dart -p 8080
    ```
 
-## Troubleshooting
+3. Show help information:
+   ```
+   dart port_killer.dart -h
+   ```
 
-If you encounter any issues:
+## How it works
 
-1. Ensure you have the necessary permissions to kill processes.
-2. On Unix-based systems (macOS and Linux), you might need to run the tool with `sudo` for certain system processes.
-3. Check that the port number you're trying to kill actually has a process running on it.
+1. **Parsing arguments**: The script uses the `args` package to parse command-line arguments, allowing users to specify options like port number, listing ports, or showing help.
+
+2. **Listing ports**:
+   - On Windows: Uses `netstat -ano` to list all TCP/IP network connections and their associated processes.
+   - On macOS/Linux: Uses `lsof -i -P -n` to list open files and network connections.
+
+   The output is then parsed to extract port numbers and process IDs.
+
+3. **Killing a process on a specific port**:
+   - First, it identifies the process ID (PID) associated with the given port:
+     - On Windows: Uses `netstat -ano | findstr :<port>`
+     - On macOS/Linux: Uses `lsof -i :<port> -t`
+   - Then, it terminates the process using the appropriate command:
+     - On Windows: `taskkill /F /PID <pid>`
+     - On macOS/Linux: `kill -9 <pid>`
+
+4. **Error handling**: The script includes error handling to manage issues like invalid input, unsupported platforms, or failed operations.
+
+## Notes
+
+- This tool requires appropriate permissions to list and terminate processes. On some systems, you may need to run it with elevated privileges (e.g., using `sudo` on macOS/Linux).
+- Always use caution when terminating processes, especially on production systems.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions, issues, and feature requests are welcome. Feel free to check [issues page](link_to_issues) if you want to contribute.
 
 ## License
 
+[MIT License](link_to_license)
 
-## Disclaimer
-
-Use this tool responsibly. Killing processes can potentially lead to data loss or system instability if used incorrectly. Always ensure you know what process you're terminating.

@@ -4,6 +4,7 @@ import 'package:args/args.dart';
 void main(List<String> arguments) async {
   final parser = ArgParser()
     ..addOption('port', abbr: 'p', help: 'Port number to kill')
+    ..addFlag('list', abbr: 'l', negatable: false, help: 'List all running ports')
     ..addFlag('help', abbr: 'h', negatable: false, help: 'Show usage information');
 
   ArgResults argResults;
@@ -20,9 +21,14 @@ void main(List<String> arguments) async {
     exit(0);
   }
 
+  if (argResults['list']) {
+    await listPorts();
+    exit(0);
+  }
+
   final port = argResults['port'];
   if (port == null) {
-    print('Error: Port number is required.');
+    print('Error: Port number is required when not using --list.');
     printUsage(parser);
     exit(1);
   }
@@ -36,8 +42,59 @@ void main(List<String> arguments) async {
 }
 
 void printUsage(ArgParser parser) {
-  print('Usage: dart port_killer.dart -p <port_number>');
+  print('Usage: dart port_killer.dart [-p <port_number> | -l]');
   print(parser.usage);
+}
+
+Future<void> listPorts() async {
+  String command;
+  List<String> arguments;
+
+  if (Platform.isWindows) {
+    command = 'netstat';
+    arguments = ['-ano'];
+  } else if (Platform.isMacOS || Platform.isLinux) {
+    command = 'lsof';
+    arguments = ['-i', '-P', '-n'];
+  } else {
+    throw 'Unsupported platform: ${Platform.operatingSystem}';
+  }
+
+  final result = await Process.run(command, arguments, runInShell: true);
+
+  if (result.exitCode != 0) {
+    throw 'Failed to list ports: ${result.stderr}';
+  }
+
+  final output = result.stdout.toString().trim();
+  final lines = output.split('\n');
+
+  print('List of running ports:');
+  print('----------------------');
+
+  if (Platform.isWindows) {
+    for (var line in lines.skip(4)) {
+      final parts = line.trim().split(RegExp(r'\s+'));
+      if (parts.length >= 2) {
+        final address = parts[1].split(':');
+        if (address.length == 2) {
+          print('Port: ${address[1].padRight(5)} | PID: ${parts.last}');
+        }
+      }
+    }
+  } else {
+    for (var line in lines.skip(1)) {
+      if (line.contains('LISTEN')) {
+        final parts = line.trim().split(RegExp(r'\s+'));
+        if (parts.length >= 9) {
+          final address = parts[8].split(':');
+          if (address.length == 2) {
+            print('Port: ${address[1].padRight(5)} | PID: ${parts[1]}');
+          }
+        }
+      }
+    }
+  }
 }
 
 Future<void> killPort(int port) async {
